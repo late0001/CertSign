@@ -1,0 +1,14 @@
+[certsign]
+username=xx
+password=xxx
+
+[ms_sign]
+username=xxx
+password=xxx
+
+[iflow]
+username=xx
+password=xx
+11n=0.4
+11ac=0.4
+11ax=0.2
