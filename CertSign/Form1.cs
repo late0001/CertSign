@@ -41,6 +41,8 @@ namespace CertSign
         protected string certsign_password;
         protected string mspt_usr;
         protected string mspt_pwd;
+
+        List<SignItem> sList;
         public Form1()
         {
             InitializeComponent();
@@ -60,6 +62,7 @@ namespace CertSign
             sendWorker.DoWork += SendWork;
             ReadStdOutput += new DelReadStdOutput(ReadStdOutputAction);
             ReadPySrv += new DelReadPySrv(ReadRecvFormPySrv);
+            sList = new List<SignItem>();
         }
 
 
@@ -69,9 +72,56 @@ namespace CertSign
             progressBar1.Value = e.ProgressPercentage;
         }
 
+        private void dealOneFile(string filePath)
+        {
+            string prjName = string.Empty;
+            bool isX64 = false;
+            if (filePath == "")
+            {
+                MessageBox.Show("filePath is empty, please drag file to button on first page");
+                return;
+            }
+            int index = filePath.LastIndexOf("\\");
+            if (index < 0)
+            {
+                MessageBox.Show("can not find \\ in file path");
+                return;
+            }
+            else
+            {
+                prjName = filePath.Substring(index + 1);
+                prjName = prjName.Substring(0, prjName.Length - 4);
+            }
+
+            if (filePath.ToLower().IndexOf("x64") < 0)
+            {
+                isX64 = false;
+            }
+            else
+            {
+                isX64 = true;
+            }
+            SignItem item = new SignItem(prjName, filePath, isX64);
+            sList.Add(item);
+            ListViewItem li = new ListViewItem();
+            li.Text = item.prj_Name;
+            li.SubItems.Add(item.prj_filePath);
+            li.SubItems.Add(item.isX64.ToString());
+            listView1.Items.Add(li);
+        }
         private void DragRecvBtn_DragDrop(object sender, DragEventArgs e)
         {
-            driverPathTb.Text = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+            
+            System.Array fileArray = (System.Array)e.Data.GetData(DataFormats.FileDrop);
+            foreach ( object x in fileArray) {
+                string filePath = x.ToString();
+                dealOneFile(filePath);
+            }
+
+            //string filePath = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+            //driverPathTb.Text = filePath;
+            
+           
         }
 
         private void DragRecvBtn_DragEnter(object sender, DragEventArgs e)
@@ -541,12 +591,18 @@ SocketType.Stream, ProtocolType.Tcp);
             // signFiles();
 
         }
-        public class Item{
-            public string prj_Name;
-            public string prj_filePath;
-            public bool isX64;
+        public class SignItem{
+            public string prj_Name { get; set; }
+            public string prj_filePath { get; set; }
+            public bool isX64 { get; set; }
+
+            public SignItem(string prj_Name, string prj_filePath, bool isX64) {
+                this.prj_Name = prj_Name;
+                this.prj_filePath = prj_filePath;
+                this.isX64 = isX64;
+            }
         }
-        private void loginMSPartner(string filePath, string prjName) 
+        private void loginMSPartner(List<SignItem> nList) 
         {
             
             ChromeDriverService service = ChromeDriverService.CreateDefaultService(System.Environment.CurrentDirectory);
@@ -576,47 +632,86 @@ SocketType.Stream, ProtocolType.Tcp);
             next_btn.Click();
             Thread.Sleep(1000);
 
-            next_btn = driver.FindElement(By.XPath("//div[@class='onedash-navigation-category'][contains(.,'驅動程式')]"));
-            next_btn.Click();
-            Thread.Sleep(4000);
-            IWebElement newhard = driver.FindElement(By.XPath("//a[contains(@uitestid,'newDriverButton')]"));
-            newhard.Click();
-            var inputHN = driver.FindElement(By.XPath("//input[contains(@uitestid,'inputHardwareName')]"));
-            inputHN.SendKeys(prjName);
-            var inputfile = driver.FindElement(By.XPath("//*[@id='file']"));
-            inputfile.SendKeys(filePath);
-            Thread.Sleep(5000);
-            IWebElement checkBox_X64_RS1 = driver.FindElement(By.XPath("//span[@uitestid='spanRequestedSignature_WINDOWS_v100_X64_RS1_FULL']"));
-            var checkBox_X64_19H1 = driver.FindElement(By.XPath("//span[@uitestid='spanRequestedSignature_WINDOWS_v100_X64_19H1_FULL']"));
-            checkBox_X64_RS1.Click();
-            checkBox_X64_19H1.Click();
-            var submit_btn = driver.FindElement(By.XPath("//button[@uitestid='buttonSubmit']"));
-            submit_btn.Click();
-            Thread.Sleep(1000);
+            foreach(var needSignItem in nList)
+            {
+                int retry = 0;
+                next_btn = driver.FindElement(By.XPath("//div[@class='onedash-navigation-category'][contains(.,'驅動程式')]"));
+                next_btn.Click();
+                Thread.Sleep(10000);
+                do {
+                    try
+                    {
+                        IWebElement newhard = driver.FindElement(By.XPath("//a[contains(@uitestid,'newDriverButton')]"));
+                        newhard.Click();
+                        var inputHN = driver.FindElement(By.XPath("//input[contains(@uitestid,'inputHardwareName')]"));
+                        inputHN.SendKeys(needSignItem.prj_Name);
+                        var inputfile = driver.FindElement(By.XPath("//*[@id='file']"));
+                        inputfile.SendKeys(needSignItem.prj_filePath);
+                        Thread.Sleep(5000);
+                        new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(webDriver =>
 
+                      webDriver.FindElement(By.XPath("//span[@uitestid='spanRequestedSignature_WINDOWS_v100_X64_RS1_FULL']")).Displayed
+                          );
+                        if (needSignItem.isX64)
+                        {
+                            var checkBox_X64_RS1 = driver.FindElement(By.XPath("//span[@uitestid='spanRequestedSignature_WINDOWS_v100_X64_RS1_FULL']"));
+                            var checkBox_X64_19H1 = driver.FindElement(By.XPath("//span[@uitestid='spanRequestedSignature_WINDOWS_v100_X64_19H1_FULL']"));
+                            checkBox_X64_RS1.Click();
+                            checkBox_X64_19H1.Click();
+                        }
+                        else
+                        {
+                            var checkBox_X86_RS1 = driver.FindElement(By.XPath("//span[contains(@uitestid,'spanRequestedSignature_WINDOWS_v100_RS1_FULL')]"));
+                            var checkBox_X86_19H1 = driver.FindElement(By.XPath("//span[contains(@uitestid,'spanRequestedSignature_WINDOWS_v100_19H1_FULL')]"));
+                            checkBox_X86_RS1.Click();
+                            checkBox_X86_19H1.Click();
+                        }
+                        Thread.Sleep(10000);
+                        new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(webDriver =>
+
+                       webDriver.FindElement(By.XPath("//button[@uitestid='buttonSubmit']")).Displayed
+                           );
+                        var submit_btn = driver.FindElement(By.XPath("//button[@uitestid='buttonSubmit']"));
+                        submit_btn.Click();
+                        Thread.Sleep(20000);
+                        break;
+                    }
+                    catch (ElementClickInterceptedException ex)
+                    {
+                        Thread.Sleep(1000);
+                        next_btn = driver.FindElement(By.XPath("//div[@class='onedash-navigation-category'][contains(.,'驅動程式')]"));
+                        next_btn.Click();
+                        new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(webDriver =>
+
+                             webDriver.FindElement(By.XPath("//a[contains(@uitestid,'newDriverButton')]")).Displayed
+                         );
+                        continue;
+                        //Thread.Sleep(1000);
+                    }
+                } while (true);
+               
+                
+                
+            }
         }
         private void btn_ms_sign_Click(object sender, EventArgs e)
         {
-            string filePath = driverPathTb.Text.Trim();
-            string prjName = string.Empty;
-            if (filePath == "")
-            {
-                MessageBox.Show("filePath is empty, please drag file to button on first page");
-                return;
-            }
-            int index = filePath.LastIndexOf("\\");
-            if (index < 0)
-            {
-                MessageBox.Show("can not find \\ in file path");
-                return;
-            }else{
-                prjName = filePath.Substring(index + 1);
-                prjName = prjName.Substring(0, prjName.Length - 4);
-            }
+            if (sList.Count == 0) return;
                
             //initINIConfig();
            
-            loginMSPartner(filePath, prjName);
+            loginMSPartner(sList);
+        }
+
+        private void DragRecvBtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btn_clearlist_Click(object sender, EventArgs e)
+        {
+            sList.Clear();
+            listView1.Clear();
         }
     }
 }
