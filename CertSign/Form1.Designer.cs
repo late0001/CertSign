@@ -57,7 +57,6 @@ namespace CertSign
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.webSourceControl1 = new Awesomium.Windows.Forms.WebSourceControl();
             this.btn_clearlist = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -122,7 +121,6 @@ namespace CertSign
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.btn_clearlist);
-            this.tabPage2.Controls.Add(this.webSourceControl1);
             this.tabPage2.Controls.Add(this.listView1);
             this.tabPage2.Controls.Add(this.btn_ms_sign);
             this.tabPage2.Controls.Add(this.btnCompression);
@@ -320,13 +318,7 @@ namespace CertSign
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // webSourceControl1
-            // 
-            this.webSourceControl1.Location = new System.Drawing.Point(523, 143);
-            this.webSourceControl1.Name = "webSourceControl1";
-            this.webSourceControl1.Size = new System.Drawing.Size(75, 23);
-            this.webSourceControl1.TabIndex = 10;
+
             // 
             // btn_clearlist
             // 
@@ -396,7 +388,6 @@ namespace CertSign
         private System.Windows.Forms.ColumnHeader colHeader_arch;
         private System.Windows.Forms.ColumnHeader colHeader_status;
         private System.Windows.Forms.Button btn_clearlist;
-        private Awesomium.Windows.Forms.WebSourceControl webSourceControl1;
     }
 }
 
