@@ -36,6 +36,7 @@ namespace CertSign
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btn_clearlist = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
             this.colHeader_pn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colHeader_path = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -57,7 +58,7 @@ namespace CertSign
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.btn_clearlist = new System.Windows.Forms.Button();
+            this.btn_odering = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -83,7 +84,7 @@ namespace CertSign
             // 
             // driverPathTb
             // 
-            this.driverPathTb.Location = new System.Drawing.Point(29, 20);
+            this.driverPathTb.Location = new System.Drawing.Point(20, 114);
             this.driverPathTb.Name = "driverPathTb";
             this.driverPathTb.Size = new System.Drawing.Size(604, 25);
             this.driverPathTb.TabIndex = 1;
@@ -108,11 +109,12 @@ namespace CertSign
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.btn_odering);
             this.tabPage1.Controls.Add(this.driverPathTb);
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(779, 343);
+            this.tabPage1.Size = new System.Drawing.Size(962, 343);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -135,6 +137,16 @@ namespace CertSign
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // btn_clearlist
+            // 
+            this.btn_clearlist.Location = new System.Drawing.Point(766, 15);
+            this.btn_clearlist.Name = "btn_clearlist";
+            this.btn_clearlist.Size = new System.Drawing.Size(87, 29);
+            this.btn_clearlist.TabIndex = 11;
+            this.btn_clearlist.Text = "清空";
+            this.btn_clearlist.UseVisualStyleBackColor = true;
+            this.btn_clearlist.Click += new System.EventHandler(this.btn_clearlist_Click);
             // 
             // listView1
             // 
@@ -236,7 +248,7 @@ namespace CertSign
             this.tabPage3.Location = new System.Drawing.Point(4, 25);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(779, 343);
+            this.tabPage3.Size = new System.Drawing.Size(962, 343);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -278,7 +290,7 @@ namespace CertSign
             this.tabPage5.Location = new System.Drawing.Point(4, 25);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(771, 124);
+            this.tabPage5.Size = new System.Drawing.Size(958, 124);
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "tabPage5";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -287,7 +299,7 @@ namespace CertSign
             // 
             this.richTextBox1.Location = new System.Drawing.Point(0, -1);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(757, 121);
+            this.richTextBox1.Size = new System.Drawing.Size(955, 121);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -318,17 +330,16 @@ namespace CertSign
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-
             // 
-            // btn_clearlist
+            // btn_odering
             // 
-            this.btn_clearlist.Location = new System.Drawing.Point(766, 15);
-            this.btn_clearlist.Name = "btn_clearlist";
-            this.btn_clearlist.Size = new System.Drawing.Size(87, 29);
-            this.btn_clearlist.TabIndex = 11;
-            this.btn_clearlist.Text = "清空";
-            this.btn_clearlist.UseVisualStyleBackColor = true;
-            this.btn_clearlist.Click += new System.EventHandler(this.btn_clearlist_Click);
+            this.btn_odering.Location = new System.Drawing.Point(30, 28);
+            this.btn_odering.Name = "btn_odering";
+            this.btn_odering.Size = new System.Drawing.Size(103, 31);
+            this.btn_odering.TabIndex = 2;
+            this.btn_odering.Text = "点餐";
+            this.btn_odering.UseVisualStyleBackColor = true;
+            this.btn_odering.Click += new System.EventHandler(this.btn_odering_Click);
             // 
             // Form1
             // 
@@ -388,6 +399,7 @@ namespace CertSign
         private System.Windows.Forms.ColumnHeader colHeader_arch;
         private System.Windows.Forms.ColumnHeader colHeader_status;
         private System.Windows.Forms.Button btn_clearlist;
+        private System.Windows.Forms.Button btn_odering;
     }
 }
 

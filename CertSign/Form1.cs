@@ -4,6 +4,7 @@ using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -41,6 +42,11 @@ namespace CertSign
         protected string certsign_password;
         protected string mspt_usr;
         protected string mspt_pwd;
+        protected string iflow_usr;
+        protected string iflow_pwd;
+        protected string coeff11n;
+        protected string coeff11ac;
+        protected string coeff11ax;
 
         List<SignItem> sList;
         public Form1()
@@ -433,6 +439,11 @@ SocketType.Stream, ProtocolType.Tcp);
             certsign_password = INIHelper.Read("certsign", "password", "", filePath);
             mspt_usr = INIHelper.Read("ms_sign", "username", "", filePath);
             mspt_pwd = INIHelper.Read("ms_sign", "password", "", filePath);
+            iflow_usr = INIHelper.Read("iflow", "username", "", filePath);
+            iflow_pwd = INIHelper.Read("iflow", "password", "", filePath);
+            coeff11n = INIHelper.Read("iflow", "11n", "", filePath);
+            coeff11ac = INIHelper.Read("iflow", "11ac", "", filePath);
+            coeff11ax = INIHelper.Read("iflow", "11ax", "", filePath);
         }
         void signFiles(string filename)
         {
@@ -712,6 +723,126 @@ SocketType.Stream, ProtocolType.Tcp);
         {
             sList.Clear();
             listView1.Clear();
+        }
+
+        private void odering()
+        {
+
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService(System.Environment.CurrentDirectory);
+            //  service.HideCommandPromptWindow = true;
+
+            ChromeOptions options = new ChromeOptions();
+            options.AddArguments("--test-type", "--ignore-certificate-errors");
+            options.AddArguments("user-agent=mozilla/5.0 (linux; u; android 2.3.3; en-us; sdk build/ gri34) applewebkit/533.1 (khtml, like gecko) version/4.0 mobile safari/533.1");
+            options.AddArgument("enable-automation");
+            //   options.AddArgument("headless");
+            //  options.AddArguments("--proxy-server=http://user:password@yourProxyServer.com:8080");
+            IWebDriver driver = new OpenQA.Selenium.Chrome.ChromeDriver(service, options, TimeSpan.FromSeconds(120));
+            // using (IWebDriver driver = new OpenQA.Selenium.Chrome.ChromeDriver(service, options, TimeSpan.FromSeconds(120))) {
+            driver.Navigate().GoToUrl("https://iflow.realtek.com.cn/RTData/CyberStar/portal.nsf"); 
+            var login_username = driver.FindElement(By.XPath("//input[@id='textUserId']"));
+            login_username.SendKeys(this.iflow_usr);
+            Thread.Sleep(100);
+            var next_btn = driver.FindElement(By.XPath("//button[contains(@id,'buttonLogin')]"));
+            next_btn.Click();
+            Thread.Sleep(100);
+            var login_password = driver.FindElement(By.XPath("//input[contains(@id,'textPassword')]"));
+            login_password.SendKeys(this.iflow_pwd);
+            next_btn.Click();
+            Thread.Sleep(1000);
+            var top = driver.FindElement(By.Name("left"));
+            driver.SwitchTo().Frame(top);
+            Thread.Sleep(100);
+
+                
+            var a_fillform = driver.FindElement(By.XPath("//a[@href='/RTData/CyberStar/portal.nsf/FmWriteForm02?OpenForm']"));
+            a_fillform.Click();
+            Thread.Sleep(10);
+            var a_fillFoodBill = driver.FindElement(By.XPath("//font[@size='3'][contains(.,'餐费补助申请单')]"));
+            string existingWindowHandle = driver.CurrentWindowHandle;
+            a_fillFoodBill.Click();
+            Thread.Sleep(1000);
+            //get the current window handles 
+            string popupHandle = string.Empty;
+            ReadOnlyCollection<string> windowHandles = driver.WindowHandles;
+            
+            foreach (string handle in windowHandles)
+            {
+                if (handle != existingWindowHandle)
+                {
+                    popupHandle = handle; break;
+                }
+            }
+            driver.SwitchTo().Window(popupHandle);
+
+            var s = driver.FindElement(By.XPath("//select[contains(@id,'MenuDetails')]"));
+            var selectElement = new SelectElement(s);
+            selectElement.SelectByValue("一品佳（金证店）自选/20元");
+
+            var btn_addgroup = driver.FindElement(By.XPath("//input[contains(@value,'添加群组')]"));
+            btn_addgroup.Click();
+            Thread.Sleep(2000);
+
+            //driver.SwitchTo().Window(popupHandle);
+            driver.SwitchTo().Window(driver.WindowHandles.Last());
+            var s_grp = driver.FindElement(By.XPath("//select[contains(@name,'sRdep')]")); //下一项依然是//select[@name='sRdep']
+            selectElement = new SelectElement(s_grp);
+            selectElement.SelectByValue("64023 [CN 11n NIC]");
+            var sRdepX = driver.FindElement(By.XPath("//input[@id='sRdepX']"));  //#下一项依然是//input[@id='sRdepX']
+            sRdepX.Clear();
+            sRdepX.SendKeys(this.coeff11n);
+        var sOk = driver.FindElement(By.XPath("//a[@href='javascript:saveRow(0)'][contains(.,'确定')]"));
+            sOk.Click();
+        s_grp = driver.FindElement(By.XPath("//select[contains(@name,'sRdep')]"));// #下一项依然是//select[@name='sRdep']
+            selectElement = new SelectElement(s_grp);
+            selectElement.SelectByValue("64025 [CN 11ac NIC]");
+            sRdepX = driver.FindElement(By.XPath("//input[@id='sRdepX']"));//  #下一项依然是//input[@id='sRdepX']
+            sRdepX.Clear();
+            sRdepX.SendKeys(this.coeff11ac);
+            sOk = driver.FindElement(By.XPath("//a[@href='javascript:saveRow(0)'][contains(.,'确定')]"));
+            sOk.Click();
+            s_grp = driver.FindElement(By.XPath("//select[contains(@name,'sRdep')]")); //#下一项依然是//select[@name='sRdep']
+        
+        new SelectElement(s_grp).SelectByValue("64026 [CN 11ax NIC]");
+            sRdepX = driver.FindElement(By.XPath("//input[@id='sRdepX']"));  //#下一项依然是//input[@id='sRdepX']
+        sRdepX.Clear();
+            sRdepX.SendKeys(this.coeff11ax);
+            sOk = driver.FindElement(By.XPath("//a[@href='javascript:saveRow(0)'][contains(.,'确定')]"));
+            sOk.Click();
+            var sSave = driver.FindElement(By.XPath("//a[contains(.,'保存')]"));
+            sSave.Click();
+            Thread.Sleep(1000);
+            driver.SwitchTo().Window(driver.WindowHandles.Last());
+            string txt = "";
+            StreamReader sdr=null;
+            try {
+                 sdr = new StreamReader("./check.js", Encoding.UTF8);
+                
+
+                while (!sdr.EndOfStream)
+                {
+                    string str = sdr.ReadLine();
+                    txt += str + "\n";
+                }
+            } catch (Exception ex) { }
+            finally {
+                sdr.Close();
+            }
+
+            IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+            js.ExecuteScript(txt);
+            Thread.Sleep(3000); //# 一定要延时等这个弹窗出来
+        var alertObject = driver.SwitchTo().Alert();
+            Console.WriteLine(alertObject.Text);  //# 打印提示信息
+        Thread.Sleep(1000);
+            alertObject.Accept();  //# 点击确定按钮
+        Thread.Sleep(1000);
+        
+            
+        }
+        private void btn_odering_Click(object sender, EventArgs e)
+        {
+            odering();
         }
     }
 }
