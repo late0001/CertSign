@@ -383,6 +383,7 @@ SocketType.Stream, ProtocolType.Tcp);
         {
             // byte[] sendbuf = new byte[512];
             // sendbuf[0] = 0xE0;
+            if (sList.Count == 0) return;
 
             zipFilePath = driverPathTb.Text.Trim();
             if (zipFilePath == "")
@@ -391,7 +392,7 @@ SocketType.Stream, ProtocolType.Tcp);
                 return;
             }
             //initINIConfig();
-            signFiles(zipFilePath);
+            signFiles(sList);
             /*byte[] a =Encoding.UTF8.GetBytes(zipFilePath);
             sendbuf[1] = (byte)a.Length;
 
@@ -445,10 +446,10 @@ SocketType.Stream, ProtocolType.Tcp);
             coeff11ac = INIHelper.Read("iflow", "11ac", "", filePath);
             coeff11ax = INIHelper.Read("iflow", "11ax", "", filePath);
         }
-        void signFiles(string filename)
+        void signFiles(List<SignItem> nList)
         {
 
-
+            string filename =nList[0].prj_filePath;
             ChromeDriverService service = ChromeDriverService.CreateDefaultService(System.Environment.CurrentDirectory);
             //  service.HideCommandPromptWindow = true;
 

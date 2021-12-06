@@ -68,6 +68,9 @@ def walkFile(file):
 
 
 if __name__ == '__main__':
+    '''
+    usage : Tocab.py   [dir]    [filename]
+    '''
     argc = len(sys.argv)
     adir=sys.argv[1]
     a=adir.rfind("\\")
