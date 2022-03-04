@@ -81,4 +81,5 @@ if __name__ == '__main__':
     addheader(filename)
     walkFile(adir)
     os.system('Makecab /f test.ddf')
+    print("output: " + os.path.dirname(os.path.realpath(__file__))+"\\disk1\\" +filename +".cab")
     
